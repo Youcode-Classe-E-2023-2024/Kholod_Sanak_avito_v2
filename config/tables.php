@@ -161,6 +161,39 @@ class TableCreator
     }
 
 
+    // Get regular users with product counts
+    public function getRegularUsersWithProductCounts()
+    {
+        // Prepare the SQL statement to join Users and Products tables
+        $sql = "SELECT Users.username, COUNT(Products.product_id) AS product_count
+                FROM Users
+                LEFT JOIN Products ON Users.user_id = Products.creator_id
+                WHERE Users.role = 'regular'
+                GROUP BY Users.user_id";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Error in preparing the statement: " . $this->conn->error);
+        }
+
+        // Execute the statement
+        $stmt->execute();
+
+        // Get the result
+        $result = $stmt->get_result();
+
+        // Fetch all regular users with product counts
+        $usersWithProductCounts = $result->fetch_all(MYSQLI_ASSOC);
+
+        // Close the statement
+        $stmt->close();
+
+        return $usersWithProductCounts;
+    }
+
+
     //*************************   User display    **************************************/
 
     // Get regular users
@@ -180,8 +213,65 @@ class TableCreator
         return $users;
     }
 
+    //*************************  Regular User update   **************************************/
+    // Modify a regular user
+    public function modifyRegularUser($userId, $newUsername, $newEmail, $newPhone)
+    {
+        // Prepare the SQL statement
+        $sql = "UPDATE Users SET username = ?, email = ?, phone = ? WHERE user_id = ? AND role = 'regular'";
 
- //************************************* Product Table *********************************************//
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Error in preparing the statement: " . $this->conn->error);
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("sssi", $newUsername, $newEmail, $newPhone, $userId);
+        $stmt->execute();
+
+        // Check for success and return a message
+        if ($stmt->affected_rows > 0) {
+            return "Regular user modified successfully!";
+        } else {
+            return "Error modifying regular user: " . $stmt->error;
+        }
+
+        // Close the statement
+        $stmt->close();
+    }
+
+    //*************************  Regular User delete   **************************************/
+
+    // Delete a regular user
+    public function deleteRegularUser($userId)
+    {
+        // Prepare the SQL statement
+        $sql = "DELETE FROM Users WHERE user_id = ? AND role = 'regular'";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Error in preparing the statement: " . $this->conn->error);
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+
+        // Check for success and return a message
+        if ($stmt->affected_rows > 0) {
+            return "Regular user deleted successfully!";
+        } else {
+            return "Error deleting regular user: " . $stmt->error;
+        }
+
+        // Close the statement
+        $stmt->close();
+    }
+    //************************************* Product Table *********************************************//
 
 
 // Product Table
