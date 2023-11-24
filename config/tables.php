@@ -24,9 +24,7 @@ class TableCreator
                 phone VARCHAR(15) NOT NULL
             )";
 
-        if (mysqli_query($this->conn, $sql_create_table_users)) {
-            echo "Table Users created successfully";
-        } else {
+        if (!mysqli_query($this->conn, $sql_create_table_users)) {
             echo "Error creating Users table: " . mysqli_error($this->conn);
         }
     }
@@ -243,7 +241,39 @@ class TableCreator
         // Close the statement
         $stmt->close();
     }
+    //************************    Get user id      ********************************************
+    // Get user ID by username
+    /**
+     * @param $username
+     * @return mixed|void
+     */
+    public function getUserIdByUsername($username)
+    {
+        // Prepare the SQL statement
+        $sql = "SELECT user_id FROM Users WHERE username = ?";
 
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Error in preparing the statement: " . $this->conn->error);
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+
+        // Bind the result variable
+        $stmt->bind_result($userId);
+
+        // Fetch the result
+        $stmt->fetch();
+
+        // Close the statement
+        $stmt->close();
+
+        return $userId;
+    }
     //*************************  Regular User delete   **************************************/
 
     // Delete a regular user
@@ -285,14 +315,12 @@ class TableCreator
                 product_name VARCHAR(50) NOT NULL,
                 description TEXT,
                 price DECIMAL(10,2) NOT NULL,
+                image VARCHAR(255), 
                 creator_id INT(6) UNSIGNED,
-                image VARCHAR(255), -- Assuming the image path or URL
                 FOREIGN KEY (creator_id) REFERENCES Users(user_id)
             )";
 
-        if (mysqli_query($this->conn, $sql_create_table_products)) {
-            echo "Table Products created successfully";
-        } else {
+        if (!mysqli_query($this->conn, $sql_create_table_products)) {
             echo "Error creating Products table: " . mysqli_error($this->conn);
         }
     }
@@ -327,6 +355,45 @@ class TableCreator
         $stmt->close();
 
         return $userProducts;
+    }
+
+    //*************************     ADD PRODUCT   *********************************************
+    // Add a new product for a specific user
+    public function addProduct($authenticatedUsername, $productName, $description, $price, $image)
+    {
+        // Get user ID based on the authenticated username
+        $userId = $this->getUserIdByUsername($authenticatedUsername);
+
+        if (!$userId) {
+            return "Error: User not found.";
+        }
+        // Prepare the SQL statement
+        $sql = "INSERT INTO Products (creator_id, product_name, description, price, image) VALUES (?, ?, ?, ?, ?);";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            return "Error in preparing the statement: " . $this->conn->error;
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("dssds", $userId, $productName, $description, $price, $image);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return "Error adding product: " . $stmt->error;
+        }
+
+        // Check for success and return a message
+        if ($stmt->affected_rows > 0) {
+            $stmt->close();
+            return "Product added successfully!";
+        } else {
+            $stmt->close();
+            return "No rows affected. Product may not have been added.";
+        }
+
     }
 
 }
