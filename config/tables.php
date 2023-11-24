@@ -122,14 +122,53 @@ class TableCreator
         // If no matching admin is found or the password is incorrect
         return false;
     }
+
+    // Authenticate a regular user
+    public function authenticateUser($username, $password)
+    {
+        // Prepare the SQL statement
+        $sql = "SELECT * FROM Users WHERE username = ? AND role = 'regular'";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Error in preparing the statement: " . $this->conn->error);
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+
+        // Get the result
+        $result = $stmt->get_result();
+
+        // Check if a row is returned
+        if ($result->num_rows > 0) {
+            $userData = $result->fetch_assoc();
+            // Verify the password
+            if (password_verify($password, $userData['password'])) {
+                // Password is correct
+                return true;
+            }
+        }
+
+        // Close the statement
+        $stmt->close();
+
+        // If no matching user is found or the password is incorrect
+        return false;
+    }
+
+
     //*************************   User display    **************************************/
 
     // Get regular users
     public function getRegularUsers() {
         $users = array();
 
-        // Assuming you have a table named 'regular_users'
-        $query = "SELECT * FROM regular_users";
+
+        $query = "SELECT * FROM Users WHERE  role = 'regular'";
 
         $result = $this->conn->query($query);
 

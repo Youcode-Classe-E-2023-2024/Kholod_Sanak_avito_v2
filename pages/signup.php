@@ -27,13 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['email'] = $email;
 
         // Redirect the user to a new page or perform any other actions
-        header('Location: welcome.php'); // Replace 'welcome.php' with your desired page
+        header('Location: signin.php');
         exit();
     } else {
         // Output the result
         echo $message;
     }
 }
+
 ?>
 
 <!DOCTYPE html>

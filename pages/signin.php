@@ -1,23 +1,37 @@
 <?php
+
 session_start();
 
-// Check if the user is already logged in, redirect to display_products.php
-if (isset($_SESSION["user_id"])) {
-    header("Location: display_products.php");
-    exit();
-}
+// Include the TableCreator class
+require_once '../config/tables.php';
+require_once '../config/config.php';
 
 // Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Perform user authentication (add your database logic here)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get form data
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    // Assuming authentication is successful, set user_id in session
-    $_SESSION["user_id"] = 1; // Replace with the actual user ID from your database
+    // Create an instance of the TableCreator class
+    $tableCreator = new TableCreator($conn);
 
-    // Redirect to display_products.php after successful login
-    header("Location: display_products.php");
-    exit();
+    // Attempt to authenticate the user
+    $authenticated = $tableCreator->authenticateUser($username, $password);
+
+    // Check if the authentication was successful
+    if ($authenticated) {
+        // Set user data in the session (you can adjust this based on your needs)
+        $_SESSION['username'] = $username;
+
+        // Redirect the user to a new page or perform any other actions
+        header('Location: product_dashboard.php');
+        exit();
+    } else {
+        // Authentication failed, display an error message
+        echo "Invalid username or password.";
+    }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -25,18 +39,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signin</title>
+    <title>Sign In</title>
 </head>
 <body>
-<h2>Signin</h2>
-<form method="post" action="">
+<h2>Sign In</h2>
+<form method="post" action="signin.php">
     <label for="username">Username:</label>
-    <input type="text" name="username" required>
-    <br>
+    <input type="text" name="username" required><br>
+
     <label for="password">Password:</label>
-    <input type="password" name="password" required>
-    <br>
-    <input type="submit" value="Signin">
+    <input type="password" name="password" required><br>
+
+    <input type="submit" value="Sign In">
 </form>
 </body>
 </html>
