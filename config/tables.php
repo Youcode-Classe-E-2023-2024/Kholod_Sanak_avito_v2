@@ -87,6 +87,7 @@ class TableCreator
         return $this->createUserWithRole($username, $email, $password, $phone, 'admin');
     }
 
+    //******************************   Get admin     ***************************
     // Authenticate admin user
     public function authenticateAdmin($username, $password)
     {
@@ -123,6 +124,7 @@ class TableCreator
         return false;
     }
 
+    //******************************   Get regular user     ***************************
     // Authenticate a regular user
     public function authenticateUser($username, $password)
     {
@@ -161,7 +163,7 @@ class TableCreator
     }
 
 
-    // Get regular users with product counts
+    //*************        Get regular users with product counts        *****************************
     public function getRegularUsersWithProductCounts()
     {
         // Prepare the SQL statement to join Users and Products tables
@@ -295,7 +297,37 @@ class TableCreator
         }
     }
 
-    //
+    //******************************* Get products of user *******************************
+// Get products associated with a specific user
+    public function getProductsByUser($authenticatedUsername)
+    {
+        // Prepare the SQL statement
+        $sql = "SELECT product_name FROM Products 
+                JOIN Users ON Products.creator_id = Users.user_id
+                WHERE Users.username = ?";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Error in preparing the statement: " . $this->conn->error);
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("s", $authenticatedUsername);
+        $stmt->execute();
+
+        // Get the result
+        $result = $stmt->get_result();
+
+        // Fetch all products associated with the user
+        $userProducts = $result->fetch_all(MYSQLI_ASSOC);
+
+        // Close the statement
+        $stmt->close();
+
+        return $userProducts;
+    }
 
 }
 
