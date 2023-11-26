@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 // Include the TableCreator class
@@ -28,10 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } else {
         // Authentication failed, display an error message
-        echo "Invalid username or password.";
+        $errorMessage = "Invalid username or password.";
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -40,17 +38,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
-<body>
-<h2>Sign In</h2>
-<form method="post" action="signin.php">
-    <label for="username">Username:</label>
-    <input type="text" name="username" required><br>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
 
-    <label for="password">Password:</label>
-    <input type="password" name="password" required><br>
+<div class="w-1/3 p-8 bg-white shadow-md rounded-md">
 
-    <input type="submit" value="Sign In">
-</form>
+    <img src="../../logo.png" alt="Logo" class="w-16 h-14 mx-auto mb-8">
+
+    <h2 class="text-2xl mb-4 text-center">Sign In</h2>
+
+    <?php if (isset($errorMessage)) : ?>
+        <p class="text-red-500 mb-4"><?php echo $errorMessage; ?></p>
+    <?php endif; ?>
+
+    <form method="post" action="signin.php">
+        <div class="mb-4">
+            <label for="username" class="block text-sm font-medium text-gray-600">Username:</label>
+            <input type="text" name="username" required class="w-full px-4 py-2 border rounded-md">
+        </div>
+
+        <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-600">Password:</label>
+            <input type="password" name="password" required class="w-full px-4 py-2 border rounded-md">
+        </div>
+
+        <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-md">Sign In</button>
+    </form>
+
+    <a href="../../index.php" class="text-blue-500 hover:underline flex items-center mb-4">
+        Back to Home
+    </a>
+
+</div>
+
 </body>
 </html>
