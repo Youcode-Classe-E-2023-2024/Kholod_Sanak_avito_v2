@@ -30,6 +30,14 @@ class TableCreator
     }
     //*************************   User Creation     **************************************/
     //user with role
+    /**
+     * @param $username
+     * @param $email
+     * @param $password
+     * @param $phone
+     * @param $role
+     * @return string|void
+     */
     public function createUserWithRole($username, $email, $password, $phone, $role)
     {
         // Validate input
@@ -73,6 +81,14 @@ class TableCreator
     }
 
     //Create regular user
+
+    /**
+     * @param $username
+     * @param $email
+     * @param $password
+     * @param $phone
+     * @return string|void
+     */
     public function createRegularUser($username, $email, $password, $phone)
     {
         return $this->createUserWithRole($username, $email, $password, $phone, 'regular');
@@ -80,6 +96,14 @@ class TableCreator
 
 
     //Add Admin
+
+    /**
+     * @param $username
+     * @param $email
+     * @param $password
+     * @param $phone
+     * @return string|void
+     */
     public function addAdmin($username, $email, $password, $phone)
     {
         return $this->createUserWithRole($username, $email, $password, $phone, 'admin');
@@ -87,6 +111,11 @@ class TableCreator
 
     //******************************   Get admin     ***************************
     // Authenticate admin user
+    /**
+     * @param $username
+     * @param $password
+     * @return bool|void
+     */
     public function authenticateAdmin($username, $password)
     {
         // Prepare the SQL statement
@@ -124,6 +153,11 @@ class TableCreator
 
     //******************************   Get regular user     ***************************
     // Authenticate a regular user
+    /**
+     * @param $username
+     * @param $password
+     * @return bool|void
+     */
     public function authenticateUser($username, $password)
     {
         // Prepare the SQL statement
@@ -160,8 +194,46 @@ class TableCreator
         return false;
     }
 
+    //*******************************     getuser details      ****************************************
 
-    //*************        Get regular users with product counts        *****************************
+    /**
+     * @param $username
+     * @return void
+     */
+    public function getUserDetails($username)
+    {
+        // Prepare the SQL statement
+        $sql = "SELECT * FROM Users WHERE username = ?";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Error in preparing the statement: " . $this->conn->error);
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+
+        // Get the result
+        $result = $stmt->get_result();
+
+        // Fetch user details
+        $userDetails = $result->fetch_assoc();
+
+        // Close the statement
+        $stmt->close();
+
+        return $userDetails;
+    }
+
+
+    //*****************      Get regular users with product counts        *****************************
+
+    /**
+     * @return void
+     */
     public function getRegularUsersWithProductCounts()
     {
         // Prepare the SQL statement to join Users and Products tables
@@ -197,6 +269,9 @@ class TableCreator
     //*************************   User display    **************************************/
 
     // Get regular users
+    /**
+     * @return array
+     */
     public function getRegularUsers() {
         $users = array();
 
@@ -215,6 +290,13 @@ class TableCreator
 
     //*************************  Regular User update   **************************************/
     // Modify a regular user
+    /**
+     * @param $userId
+     * @param $newUsername
+     * @param $newEmail
+     * @param $newPhone
+     * @return string|void
+     */
     public function modifyRegularUser($userId, $newUsername, $newEmail, $newPhone)
     {
         // Prepare the SQL statement
@@ -241,6 +323,45 @@ class TableCreator
         // Close the statement
         $stmt->close();
     }
+
+    ////////////////////////////////////////For profile  ////////////////////////////////////
+    ///
+    public function modifyUser($authenticatedUsername, $newUsername, $newPassword, $newEmail, $newPhone)
+    {
+        // Validate input, perform necessary checks
+
+        // Hash the new password before storing it
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        // Prepare the SQL statement
+        $sql = "UPDATE Users SET username = ?, password = ?, email = ?, phone = ? WHERE username = ?";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Error in preparing the statement: " . $this->conn->error);
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("sssss", $newUsername, $hashedPassword, $newEmail, $newPhone, $authenticatedUsername);
+        $stmt->execute();
+
+        // Check if the update was successful
+        if (!$stmt->affected_rows > 0) {
+            $resultMessage = "User details modified successfully.";
+        } else {
+            $resultMessage = "Error modifying user details.";
+        }
+
+        // Close the statement
+        $stmt->close();
+
+        return $resultMessage;
+    }
+
+
+
     //************************    Get user id      ********************************************
     // Get user ID by username
     /**
@@ -277,10 +398,10 @@ class TableCreator
     //*************************  Regular User delete   **************************************/
 
     // Delete a regular user
-    public function deleteRegularUser($userId)
+    public function deleteRegularUser($username)
     {
         // Prepare the SQL statement
-        $sql = "DELETE FROM Users WHERE user_id = ? AND role = 'regular'";
+        $sql = "DELETE FROM Users WHERE username = ? AND role = 'regular'";
 
         // Use prepared statements to prevent SQL injection
         $stmt = $this->conn->prepare($sql);
@@ -290,7 +411,7 @@ class TableCreator
         }
 
         // Bind parameters and execute the statement
-        $stmt->bind_param("i", $userId);
+        $stmt->bind_param("s", $username);
         $stmt->execute();
 
         // Check for success and return a message
@@ -326,13 +447,24 @@ class TableCreator
     }
 
     //******************************* Get products of user *******************************
-// Get products associated with a specific user
+    // Get products associated with a specific user
+    /**
+     * @param $authenticatedUsername
+     * @return  array of products associated with the specified user.
+     */
+    /**
+     * Get products associated with a specific user
+     *
+     * @param string $authenticatedUsername
+     * @return array
+     */
     public function getProductsByUser($authenticatedUsername)
     {
         // Prepare the SQL statement
-        $sql = "SELECT product_name FROM Products 
-                JOIN Users ON Products.creator_id = Users.user_id
-                WHERE Users.username = ?";
+        $sql = "SELECT product_id, product_name, description, price 
+            FROM Products 
+            JOIN Users ON Products.creator_id = Users.user_id
+            WHERE Users.username = ?";
 
         // Use prepared statements to prevent SQL injection
         $stmt = $this->conn->prepare($sql);
@@ -357,8 +489,18 @@ class TableCreator
         return $userProducts;
     }
 
+
+
     //*************************     ADD PRODUCT   *********************************************
     // Add a new product for a specific user
+    /**
+     * @param $authenticatedUsername
+     * @param $productName
+     * @param $description
+     * @param $price
+     * @param $image
+     * @return string
+     */
     public function addProduct($authenticatedUsername, $productName, $description, $price, $image)
     {
         // Get user ID based on the authenticated username
@@ -395,7 +537,113 @@ class TableCreator
         }
 
     }
+    //*************************     Get PRODUCT Id  *********************************************
 
+    /**
+     * @param $productId
+     * @return false
+     */
+    public function getProductById($productId) {
+        $query = "SELECT * FROM products WHERE product_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$productId]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: false;
+    }
+
+    //*************************     Modify product  *************************************************
+
+    /**
+     * @param $productId
+     * @param $newProductName
+     * @param $newDescription
+     * @param $newPrice
+     * @param $newImage
+     * @return string
+     */
+    public function modifyProduct($productId, $newProductName, $newDescription, $newPrice, $newImage) {
+        $query = "UPDATE products SET product_name = ?, description = ?, price = ?, image = ? WHERE product_id = ?";
+        $stmt = $this->conn->prepare($query);
+
+        // Check for an error in preparing the statement
+        if (!$stmt) {
+            return "Error in preparing the statement: " . $this->conn->error;
+        }
+
+        // Bind parameters and execute the statement
+        $stmt->bind_param("dssds",$productId, $newProductName, $newDescription, $newPrice, $newImage );
+
+        // Assuming all input values are validated and sanitized appropriately
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return "Error modifying product: " . $stmt->error;
+        }
+
+        // Store the number of affected rows before closing the statement
+        $affectedRows = $stmt->affected_rows;
+
+        // Close the statement
+        $stmt->close();
+
+        // Check for success and return a message
+        if ($affectedRows > 0) {
+            return "Product modified successfully!";
+        } else {
+            return "No rows affected. Product may not have been modified.";
+        }
+    }
+
+
+    //***********************************     Delete product      *************************************
+
+    /**
+     * @param $productIdToDelete
+     * @return string
+     */
+    public function deleteProduct($productIdToDelete) {
+        try {
+            // Prepare and execute the SQL statement to delete the product
+            $stmt = $this->conn->prepare("DELETE FROM products WHERE product_id = ?");
+            $stmt->bind_param("d", $productIdToDelete);
+
+            if ($stmt->execute()) {
+                return "Product deleted successfully.";
+            } else {
+                return "Error deleting product: " . $stmt->error;
+            }
+        } catch (Exception $e) {
+            return "Error: " . $e->getMessage();
+        }
+    }
+
+    //***********************        Display products           ******************************
+
+    /**
+     * @return array|string
+     */
+    public function getProductsWithCreators() {
+        // Assume 'Products' and 'Users' are your table names
+
+        // Select necessary columns from both tables
+        $sql = "SELECT p.product_id, p.product_name, p.description, p.price, p.image, u.username AS creator_name
+            FROM Products p
+            JOIN Users u ON p.creator_id = u.user_id
+            ORDER BY p.product_id DESC";
+
+        $result = $this->conn->query($sql);
+
+        if (!$result) {
+            return "Error retrieving products: " . $this->conn->error;
+        }
+
+        $products = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+        }
+
+        return $products;
+    }
 }
 
 
