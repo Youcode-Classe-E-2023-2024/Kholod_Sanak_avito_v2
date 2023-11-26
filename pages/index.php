@@ -9,10 +9,10 @@
 <body class="bg-gray-100">
 
 <!-- Navbar -->
-<nav class="bg-blue-500 p-4 text-white">
+<nav class="bg-blue-600 p-4 text-white">
     <div class="flex items-center">
         <!-- Logo -->
-        <img src="path-to-your-logo.png" alt="Logo" class="h-8 w-8 mr-2">
+        <img src="logo.png" alt="Logo" class="h-12 w-16mr-2">
 
         <!-- Sign up and Sign in links -->
         <div class="ml-auto">
@@ -62,5 +62,9 @@
     ?>
 
 </div>
+<!-- Footer -->
+<footer class="bg-gray-800 text-white text-center py-4">
+    &copy; 2023 Avito. All rights reserved.
+</footer>
 </body>
 </html>
