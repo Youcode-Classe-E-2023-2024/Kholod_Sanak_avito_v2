@@ -2,8 +2,8 @@
 session_start();
 
 // Include the TableCreator class
-require_once '../config/tables.php';
-require_once '../config/config.php';
+require_once '../../config/tables.php';
+require_once '../../config/config.php';
 
 
 // Create an instance of the TableCreator class
