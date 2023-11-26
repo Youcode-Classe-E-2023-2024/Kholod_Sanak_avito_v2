@@ -42,7 +42,7 @@
             ?>
             <div class="border p-4 mb-4">
                 <!-- Product Image -->
-                <img src="<?php echo $product['image']; ?>" alt="Product Image" class="w-full h-40 object-cover mb-2">
+                <img src="<?php echo $product['image']; ?>" alt="Product Image" class="w-full h-80 object-cover mb-2">
 
                 <!-- Product Name -->
                 <p class="text-lg font-bold mb-2"><?php echo $product['product_name']; ?></p>
