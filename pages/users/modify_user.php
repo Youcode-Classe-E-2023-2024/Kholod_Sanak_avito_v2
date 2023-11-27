@@ -76,21 +76,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteAccount'])) {
 <a href="../products/product_dashboard.php" class="text-blue-500 hover:underline mb-4 inline-block">Back to Product Dashboard</a>
 
 <!-- User details form -->
-<form method="post" action="modify_user.php" class="w-1/2">
-    <label for="newUsername" class="block mb-2">New Username:</label>
-    <input type="text" name="newUsername" value="<?php echo $userDetails['username']; ?>" required class="w-full px-4 py-2 mb-4 border">
+<form method="post" action="modify_user.php" class="w-1/2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <label for="newUsername" class="block mb-2 text-sm font-medium text-gray-600">New Username:</label>
+    <input type="text" name="newUsername" value="<?php echo $userDetails['username']; ?>" required class="w-full px-4 py-2 mb-4 border focus:outline-none focus:shadow-outline">
 
-    <label for="newPassword" class="block mb-2">New Password:</label>
-    <input type="password" name="newPassword" required class="w-full px-4 py-2 mb-4 border">
+    <label for="newPassword" class="block mb-2 text-sm font-medium text-gray-600">New Password:</label>
+    <input type="password" name="newPassword" required class="w-full px-4 py-2 mb-4 border focus:outline-none focus:shadow-outline">
 
-    <label for="newEmail" class="block mb-2">New Email:</label>
-    <input type="email" name="newEmail" value="<?php echo $userDetails['email']; ?>" required class="w-full px-4 py-2 mb-4 border">
+    <label for="newEmail" class="block mb-2 text-sm font-medium text-gray-600">New Email:</label>
+    <input type="email" name="newEmail" value="<?php echo $userDetails['email']; ?>" required class="w-full px-4 py-2 mb-4 border focus:outline-none focus:shadow-outline">
 
-    <label for="newPhone" class="block mb-2">New Phone:</label>
-    <input type="text" name="newPhone" value="<?php echo $userDetails['phone']; ?>" required class="w-full px-4 py-2 mb-4 border">
+    <label for="newPhone" class="block mb-2 text-sm font-medium text-gray-600">New Phone:</label>
+    <input type="text" name="newPhone" value="<?php echo $userDetails['phone']; ?>" required class="w-full px-4 py-2 mb-4 border focus:outline-none focus:shadow-outline">
 
-    <input type="submit" name="modifyUser" value="Modify User" class="bg-blue-500 text-white px-4 py-2 rounded">
+    <input type="submit" name="modifyUser" value="Modify Information" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded focus:outline-none focus:shadow-outline">
 </form>
+
 
 <!-- Form for deleting the account -->
 <form method="post" action="modify_user.php" class="mt-4">
