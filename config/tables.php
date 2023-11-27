@@ -28,7 +28,7 @@ class TableCreator
             echo "Error creating Users table: " . mysqli_error($this->conn);
         }
     }
-    //*************************   User Creation     **************************************/
+    //*******************************     User Creation     ******************************************/
     //user with role
     /**
      * @param $username
@@ -108,7 +108,7 @@ class TableCreator
         return $this->createUserWithRole($username, $email, $password, $phone, 'admin');
     }
 
-    //******************************   Get admin     ***************************
+    //******************************   Get admin     ****************************************************
     // Authenticate admin user
     /**
      * @param $username
@@ -147,7 +147,7 @@ class TableCreator
         return false;
     }
 
-    //******************************   Get regular user     ***************************
+    //******************************   Get regular user     ***********************************************
     // Authenticate a regular user
     /**
      * @param $username
@@ -275,6 +275,43 @@ class TableCreator
     }
 
 
+    //*******************************     Get User id      ******************************************
+    /**
+     * @param $userID
+     * @return string
+     */
+    public function getUserByID($userID) {
+
+        $sql = "SELECT * FROM Users WHERE user_id = ?";
+        $stmt = $this->conn->prepare($sql);
+
+        // Check for an error in preparing the statement
+        if (!$stmt) {
+            return "Error in preparing the statement: " . $this->conn->error;
+        }
+
+        // Bind parameter and execute the statement
+        $stmt->bind_param("d", $userID);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return "Error fetching product: " . $stmt->error;
+        }
+
+        // Get the result
+        $result = $stmt->get_result();
+
+        // Check if a row is returned
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            return $row;
+        } else {
+            $stmt->close();
+            return "User not found.";
+        }
+    }
+
+
     //*************************  Regular User update   **************************************/
     // Modify a regular user
     /**
@@ -329,7 +366,7 @@ class TableCreator
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
         // Prepare the SQL statement
-        $sql = "UPDATE Users SET username = ?, password = ?, email = ?, phone = ? WHERE username = ?";
+        $sql = "UPDATE Users SET username = ?, password = ?, email = ?, phone = ? WHERE user_id= ?";
 
         // Use prepared statements to prevent SQL injection
         $stmt = $this->conn->prepare($sql);
@@ -424,6 +461,8 @@ class TableCreator
         // Close the statement
         $stmt->close();
     }
+
+
 
 
 
