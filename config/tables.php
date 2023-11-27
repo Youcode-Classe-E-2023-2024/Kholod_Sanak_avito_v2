@@ -96,7 +96,6 @@ class TableCreator
 
 
     //Add Admin
-
     /**
      * @param $username
      * @param $email
@@ -126,7 +125,6 @@ class TableCreator
         if (!$stmt) {
             die("Error in preparing the statement: " . $this->conn->error);
         }
-
         // Bind parameters and execute the statement
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -143,10 +141,8 @@ class TableCreator
                 return true;
             }
         }
-
         // Close the statement
         $stmt->close();
-
         // If no matching admin is found or the password is incorrect
         return false;
     }
@@ -169,7 +165,6 @@ class TableCreator
         if (!$stmt) {
             die("Error in preparing the statement: " . $this->conn->error);
         }
-
         // Bind parameters and execute the statement
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -186,16 +181,13 @@ class TableCreator
                 return true;
             }
         }
-
         // Close the statement
         $stmt->close();
-
         // If no matching user is found or the password is incorrect
         return false;
     }
 
     //*******************************     getuser details      ****************************************
-
     /**
      * @param $username
      * @return void
@@ -211,7 +203,6 @@ class TableCreator
         if (!$stmt) {
             die("Error in preparing the statement: " . $this->conn->error);
         }
-
         // Bind parameters and execute the statement
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -221,16 +212,13 @@ class TableCreator
 
         // Fetch user details
         $userDetails = $result->fetch_assoc();
-
         // Close the statement
         $stmt->close();
-
         return $userDetails;
     }
 
 
     //*****************      Get regular users with product counts        *****************************
-
     /**
      * @return void
      */
@@ -249,7 +237,6 @@ class TableCreator
         if (!$stmt) {
             die("Error in preparing the statement: " . $this->conn->error);
         }
-
         // Execute the statement
         $stmt->execute();
 
@@ -267,7 +254,6 @@ class TableCreator
 
 
     //*************************   User display    **************************************/
-
     // Get regular users
     /**
      * @return array
@@ -287,6 +273,7 @@ class TableCreator
         }
         return $users;
     }
+
 
     //*************************  Regular User update   **************************************/
     // Modify a regular user
@@ -308,7 +295,6 @@ class TableCreator
         if (!$stmt) {
             die("Error in preparing the statement: " . $this->conn->error);
         }
-
         // Bind parameters and execute the statement
         $stmt->bind_param("sssi", $newUsername, $newEmail, $newPhone, $userId);
         $stmt->execute();
@@ -319,13 +305,22 @@ class TableCreator
         } else {
             return "Error modifying regular user: " . $stmt->error;
         }
-
         // Close the statement
         $stmt->close();
     }
 
-    ////////////////////////////////////////For profile  ////////////////////////////////////
+
+
+    /////////////////////////////////////// For profile  /////////////////////////////////////////////
     ///
+    /**
+     * @param $authenticatedUsername
+     * @param $newUsername
+     * @param $newPassword
+     * @param $newEmail
+     * @param $newPhone
+     * @return string|void
+     */
     public function modifyUser($authenticatedUsername, $newUsername, $newPassword, $newEmail, $newPhone)
     {
         // Validate input, perform necessary checks
@@ -362,7 +357,7 @@ class TableCreator
 
 
 
-    //************************    Get user id      ********************************************
+    //********************************    Get username     ********************************************
     // Get user ID by username
     /**
      * @param $username
@@ -395,9 +390,14 @@ class TableCreator
 
         return $userId;
     }
-    //*************************  Regular User delete   **************************************/
 
+
+    //********************************  Regular User delete   **************************************/
     // Delete a regular user
+    /**
+     * @param $username
+     * @return string|void
+     */
     public function deleteRegularUser($username)
     {
         // Prepare the SQL statement
@@ -424,10 +424,14 @@ class TableCreator
         // Close the statement
         $stmt->close();
     }
+
+
+
+
+
     //************************************* Product Table *********************************************//
 
-
-// Product Table
+    // Product Table
     public function createProductsTable()
     {
         $sql_create_table_products = "
@@ -446,12 +450,7 @@ class TableCreator
         }
     }
 
-    //******************************* Get products of user *******************************
-    // Get products associated with a specific user
-    /**
-     * @param $authenticatedUsername
-     * @return  array of products associated with the specified user.
-     */
+    //*********************************  Get products of user  ****************************************
     /**
      * Get products associated with a specific user
      *
@@ -491,7 +490,7 @@ class TableCreator
 
 
 
-    //*************************     ADD PRODUCT   *********************************************
+    //***********************************     ADD PRODUCT   *********************************************
     // Add a new product for a specific user
     /**
      * @param $authenticatedUsername
@@ -537,22 +536,47 @@ class TableCreator
         }
 
     }
-    //*************************     Get PRODUCT Id  *********************************************
 
+
+    //************************************   Get PRODUCT Id   *********************************************
+
+    // Function to get product by ID
     /**
-     * @param $productId
-     * @return false
+     * @param $productID
+     * @return string
      */
-    public function getProductById($productId) {
-        $query = "SELECT * FROM products WHERE product_id = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute([$productId]);
+    public function getProductByID($productID) {
+        $sql = "SELECT * FROM products WHERE product_id = ?";
+        $stmt = $this->conn->prepare($sql);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: false;
+        // Check for an error in preparing the statement
+        if (!$stmt) {
+            return "Error in preparing the statement: " . $this->conn->error;
+        }
+
+        // Bind parameter and execute the statement
+        $stmt->bind_param("d", $productID);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return "Error fetching product: " . $stmt->error;
+        }
+
+        // Get the result
+        $result = $stmt->get_result();
+
+        // Check if a row is returned
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            return $row;
+        } else {
+            $stmt->close();
+            return "Product not found.";
+        }
     }
 
-    //*************************     Modify product  *************************************************
 
+    //*****************************     Modify product     *************************************************
     /**
      * @param $productId
      * @param $newProductName
@@ -561,7 +585,8 @@ class TableCreator
      * @param $newImage
      * @return string
      */
-    public function modifyProduct($productId, $newProductName, $newDescription, $newPrice, $newImage) {
+    public function modifyProduct( $productId, $newProductName, $newDescription, $newPrice, $newImage)
+    {
         $query = "UPDATE products SET product_name = ?, description = ?, price = ?, image = ? WHERE product_id = ?";
         $stmt = $this->conn->prepare($query);
 
@@ -571,7 +596,7 @@ class TableCreator
         }
 
         // Bind parameters and execute the statement
-        $stmt->bind_param("dssds",$productId, $newProductName, $newDescription, $newPrice, $newImage );
+        $stmt->bind_param("ssdsd", $newProductName, $newDescription, $newPrice, $newImage, $productId);
 
         // Assuming all input values are validated and sanitized appropriately
         if (!$stmt->execute()) {
@@ -594,8 +619,8 @@ class TableCreator
     }
 
 
-    //***********************************     Delete product      *************************************
 
+    //***********************************     Delete product      *************************************
     /**
      * @param $productIdToDelete
      * @return string
@@ -616,8 +641,9 @@ class TableCreator
         }
     }
 
-    //***********************        Display products           ******************************
 
+
+    //*********************** *****       Display products with user     ***  ******************************
     /**
      * @return array|string
      */
