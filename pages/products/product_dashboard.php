@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteProduct'])) {
 <a href="../users/modify_user.php" class="text-blue-500 hover:underline mb-4 inline-block">Modify User Details</a>
 
 <!-- Add link/button to sign out -->
-<a href="../users/logout.php" class="text-blue-500 hover:underline mb-4 inline-block">Log Out</a>
+<a href="../users/logout.php" class="text-red-500 hover:underline mb-4 inline-block">Log Out</a>
 
 <?php if (!empty($userProducts)) : ?>
     <h3 class="text-xl mb-2">Your Products:</h3>
@@ -75,8 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteProduct'])) {
                 <td class="py-2 px-4 border"><?php echo $product['description']; ?></td>
                 <td class="py-2 px-4 border"><?php echo $product['price']; ?></td>
                 <td class="py-2 px-12 border flex items-center">
-                    <!-- "Modify" button -->
-                    <a href="modify_product.php" class="bg-blue-500 text-white px-4 py-2 rounded">Modify</a>
+                    <!-- Form fields for modifying a product -->
+                    <!--<form method="post" action="modify_product.php" class="ml-2">
+                        <input type="hidden" name="productIdToModify" value="<?php echo $product['product_id']; ?>">
+                        <input type="submit" name="modifyProduct" value="Modify" class="bg-blue-500 text-white px-4 py-2 rounded">
+                    </form>-->
+                    <a href="modify_product.php?id=<?php echo $product['product_id']; ?>" class="bg-blue-500 text-white px-4 py-2 rounded">Modify</a>
 
                     <!-- Form fields for deleting a product -->
                     <form method="post" action="product_dashboard.php" class="ml-2">
