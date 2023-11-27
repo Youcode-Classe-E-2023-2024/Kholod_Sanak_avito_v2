@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifyProduct'])) {
 
 }
 
-// Assuming $tableCreator is an instance of the TableCreator class
+// $tableCreator is an instance of the TableCreator class
 $id = $_GET['id'];
 $row = $tableCreator->getProductByID($id);
 ?>

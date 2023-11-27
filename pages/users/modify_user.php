@@ -44,7 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifyUser'])) {
 
     // Refresh the user details after modifying
     $userDetails = $tableCreator->getUserDetails($newUsername);
+
 }
+
+// $tableCreator is an instance of the TableCreator class
+//$id = $_GET['id'];
+//$row = $tableCreator->getUserByID($id);
+
 
 // Check if the form is submitted for deleting the account
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteAccount'])) {
