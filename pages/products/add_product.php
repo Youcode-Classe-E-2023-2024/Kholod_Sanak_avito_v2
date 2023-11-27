@@ -52,23 +52,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addProduct'])) {
 </head>
 <body class="bg-gray-100 p-8">
 <!-- Form to add new product -->
-    <h3 class="text-xl mt-4">Add New Product:</h3>
-    <form method="post" action="add_product.php" class="max-w-md">
-        <label for="productName" class="block text-sm font-medium text-gray-600">Product Name:</label>
-        <input type="text" name="productName" required class="mt-1 p-2 border rounded w-full">
+    <h3 class="text-xl mt-2 mb-2">Add New Product</h3>
+<form method="post" action="add_product.php" class="max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <label for="productName" class="block text-sm font-medium text-gray-600">Product Name:</label>
+    <input type="text" name="productName" required class="mt-1 p-2 border rounded w-full focus:outline-none focus:shadow-outline">
 
-        <label for="description" class="block text-sm font-medium text-gray-600 mt-4">Description:</label>
-        <textarea name="description" required class="mt-1 p-2 border rounded w-full"></textarea>
+    <label for="description" class="block text-sm font-medium text-gray-600 mt-4">Description:</label>
+    <textarea name="description" required class="mt-1 p-2 border rounded w-full focus:outline-none focus:shadow-outline"></textarea>
 
-        <label for="price" class="block text-sm font-medium text-gray-600 mt-4">Price:</label>
-        <input type="text" name="price" required class="mt-1 p-2 border rounded w-full">
+    <label for="price" class="block text-sm font-medium text-gray-600 mt-4">Price:</label>
+    <input type="text" name="price" required class="mt-1 p-2 border rounded w-full focus:outline-none focus:shadow-outline">
 
-        <label for="image" class="block text-sm font-medium text-gray-600 mt-4">Image:</label>
-        <input type="text" name="image" class="mt-1 p-2 border rounded w-full">
+    <label for="image" class="block text-sm font-medium text-gray-600 mt-4">Image:</label>
+    <input type="text" name="image" class="mt-1 p-2 border rounded w-full focus:outline-none focus:shadow-outline">
 
-        <input type="submit" name="addProduct" value="Add Product" class="mt-4 bg-green-500 text-white px-4 py-2 rounded">
-    </form>
+    <input type="submit" name="addProduct" value="Add Product" class="mt-4 bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded focus:outline-none focus:shadow-outline">
+</form>
 
-    <a href="product_dashboard.php" > Return to dashboard </a>
+
+<a href="product_dashboard.php" class="text-blue-500 hover:underline mb-4 inline-block"> Return to dashboard </a>
 </body>
 </html>
