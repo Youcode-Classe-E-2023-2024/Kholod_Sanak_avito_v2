@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 
 // Include the TableCreator class
 require_once '../../config/tables.php';
@@ -15,12 +15,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tableCreator = new TableCreator($conn);
 
     // Attempt to authenticate the user
-    $authenticated = $tableCreator->authenticateUser($username, $password);
+    $authenticatedUser = $tableCreator->authenticateUser($username, $password);
+    var_dump($authenticatedUser);
 
     // Check if the authentication was successful
-    if ($authenticated) {
+
+    if ($authenticatedUser != null) {
         // Set user data in the session (you can adjust this based on your needs)
-        $_SESSION['username'] = $username;
+        session_start();
+        $_SESSION['user_id']  = $authenticatedUser['user_id'];
+        $_SESSION['username'] = $authenticatedUser['username'];
 
         // Redirect the user to a new page or perform any other actions
         header('Location: http://localhost/New_Avito/pages/products/product_dashboard.php');
