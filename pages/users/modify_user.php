@@ -30,26 +30,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifyUser'])) {
     $newEmail = $_POST['newEmail'];
     $newPhone = $_POST['newPhone'];
 
+
     // Attempt to modify user details
     $modifyUserMessage = $tableCreator->modifyUser(
-        $authenticatedUsername,
+        $_SESSION['user_id'],
         $newUsername,
         $newPassword,
         $newEmail,
         $newPhone
     );
-
     // Output the result
     echo $modifyUserMessage;
 
-    // Refresh the user details after modifying
-    $userDetails = $tableCreator->getUserDetails($newUsername);
+
 
 }
+// Refresh the user details after modifying
+$userDetails = $tableCreator->getUserDetails($_SESSION['user_id']);
 
-// $tableCreator is an instance of the TableCreator class
-//$id = $_GET['id'];
-//$row = $tableCreator->getUserByID($id);
+// get user_id from URL
+//$username = $_GET['username'];
+//$row = $tableCreator->getUserDetails($username);
+//var_dump($row);
 
 
 // Check if the form is submitted for deleting the account
@@ -87,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteAccount'])) {
     <input type="text" name="newUsername" value="<?php echo $userDetails['username']; ?>" required class="w-full px-4 py-2 mb-4 border focus:outline-none focus:shadow-outline">
 
     <label for="newPassword" class="block mb-2 text-sm font-medium text-gray-600">New Password:</label>
-    <input type="password" name="newPassword" required class="w-full px-4 py-2 mb-4 border focus:outline-none focus:shadow-outline">
+    <input type="password" name="newPassword" value="<?php echo $userDetails['password']; ?>" required class="w-full px-4 py-2 mb-4 border focus:outline-none focus:shadow-outline">
 
     <label for="newEmail" class="block mb-2 text-sm font-medium text-gray-600">New Email:</label>
     <input type="email" name="newEmail" value="<?php echo $userDetails['email']; ?>" required class="w-full px-4 py-2 mb-4 border focus:outline-none focus:shadow-outline">
