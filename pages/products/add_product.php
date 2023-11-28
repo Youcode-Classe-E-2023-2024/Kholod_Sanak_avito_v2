@@ -21,9 +21,12 @@ $authenticatedUserID = $_SESSION['user_id'];
 $tableCreator = new TableCreator($conn);
 
 // Get products associated with the authenticated user
-$userProducts = $tableCreator->getUsernameByID($authenticatedUserID);
+$userProducts = $tableCreator->getUserIdByUsername($authenticatedUsername);
 //var_dump($userProducts);
 
+//Get the authenticated username
+$authenticatedUserID = $_SESSION['user_id'];
+$authenticatedUsername = $tableCreator->getUsernameByID($authenticatedUserID);
 
 // Check if the form is submitted for adding a new product
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addProduct'])) {
@@ -33,14 +36,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addProduct'])) {
     $price = $_POST['price'];
     $image = $_POST['image'];
 
+
+
     // Attempt to add a new product
-    $addProductMessage = $tableCreator->addProduct($authenticatedUserID, $productName,$description, $price, $image);
+    $addProductMessage = $tableCreator->addProduct($authenticatedUsername, $productName,$description, $price, $image);
     // Output the result
     echo $addProductMessage;
 
     // Refresh the product list after adding a product
     /** @var TYPE_NAME $userProducts */
-    $userProducts = $tableCreator->getProductsByUser($authenticatedUserID);
+    $userProducts = $tableCreator->getProductsByUser($authenticatedUsername);
+    //var_dump($userProducts);
 }
 
 ?>
