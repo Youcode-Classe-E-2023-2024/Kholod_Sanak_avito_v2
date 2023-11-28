@@ -14,13 +14,17 @@ if (!isset($_SESSION['username'])) {
 
 // Get the authenticated username
 $authenticatedUsername = $_SESSION['username'];
+//var_dump($authenticatedUsername);
+$authenticatedUserID = $_SESSION['user_id'];
+
+
 
 // Create an instance of the TableCreator class
 $tableCreator = new TableCreator($conn);
 
-// Get products associated with the authenticated user
+// Get products associated with  authenticated user
 $userProducts = $tableCreator->getProductsByUser($authenticatedUsername);
-
+//var_dump($userProducts);
 
 
 
@@ -37,7 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteProduct'])) {
 
     // Refresh the product list after deleting a product
     $userProducts = $tableCreator->getProductsByUser($authenticatedUsername);
+
+
 }
+$userDetails=$tableCreator->getUserDetails($authenticatedUsername);
+//var_dump($userDetails);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteProduct'])) {
 
 <h2 class="text-2xl mb-4">Welcome, <?php echo $authenticatedUsername; ?>!</h2>
 
-<!-- Add link/button to modify user details -->
-<a href="../users/modify_user.php" class="text-blue-500 hover:underline mb-4 inline-block">Modify User Details</a>
+<!-- Link to modify user details via id -->
+<a href="../users/modify_user.php?id=<?php echo $authenticatedUsername; ?>" class="text-blue-500 hover:underline mb-4 inline-block">Modify User Details</a>
 
 <!-- Add link/button to sign out -->
 <a href="../users/logout.php" class="text-red-500 hover:underline mb-4 inline-block">Log Out</a>
