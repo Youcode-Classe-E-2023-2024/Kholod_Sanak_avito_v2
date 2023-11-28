@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Attempt to authenticate the user
     $authenticatedUser = $tableCreator->authenticateUser($username, $password);
-    var_dump($authenticatedUser);
+    //var_dump($authenticatedUser);
 
     // Check if the authentication was successful
 
