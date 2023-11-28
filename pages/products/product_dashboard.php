@@ -12,15 +12,16 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Get the authenticated username
-$authenticatedUsername = $_SESSION['username'];
-//var_dump($authenticatedUsername);
-$authenticatedUserID = $_SESSION['user_id'];
-
-
 
 // Create an instance of the TableCreator class
 $tableCreator = new TableCreator($conn);
+
+// Get the authenticated username
+//$authenticatedUsername = $_SESSION['username'];
+//var_dump($authenticatedUsername);
+$authenticatedUserID = $_SESSION['user_id'];
+$authenticatedUsername = $tableCreator->getUsernameByID($authenticatedUserID);
+
 
 // Get products associated with  authenticated user
 $userProducts = $tableCreator->getProductsByUser($authenticatedUsername);
