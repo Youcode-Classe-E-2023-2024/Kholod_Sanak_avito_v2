@@ -171,23 +171,25 @@ class TableCreator
 
         // Get the result
         $result = $stmt->get_result();
+        $userData = $result->fetch_assoc();
 
         // Check if a row is returned
         if ($result->num_rows > 0) {
-            $userData = $result->fetch_assoc();
+
+
             // Verify the password
             if (password_verify($password, $userData['password'])) {
                 // Password is correct
-                return true;
+                return $userData;
             }
         }
         // Close the statement
         $stmt->close();
         // If no matching user is found or the password is incorrect
-        return false;
+
     }
 
-    //*******************************     getuser details      ****************************************
+    //*******************************     getuser details  with id    ****************************************
     /**
      * @param $username
      * @return void
@@ -195,7 +197,7 @@ class TableCreator
     public function getUserDetails($username)
     {
         // Prepare the SQL statement
-        $sql = "SELECT * FROM Users WHERE username = ?";
+        $sql = "SELECT * FROM Users WHERE user_id = ?";
 
         // Use prepared statements to prevent SQL injection
         $stmt = $this->conn->prepare($sql);
@@ -358,7 +360,7 @@ class TableCreator
      * @param $newPhone
      * @return string|void
      */
-    public function modifyUser($authenticatedUsername, $newUsername, $newPassword, $newEmail, $newPhone)
+    public function modifyUser($userId, $newUsername, $newPassword, $newEmail, $newPhone)
     {
         // Validate input, perform necessary checks
 
@@ -366,7 +368,46 @@ class TableCreator
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
         // Prepare the SQL statement
-        $sql = "UPDATE Users SET username = ?, password = ?, email = ?, phone = ? WHERE user_id= ?";
+        $sql = "UPDATE users SET username = ?, password = ?, email = ?, phone = ? WHERE user_id= ?";
+
+        // Use prepared statements to prevent SQL injection
+        $stmt = $this->conn->prepare($sql);
+
+        if ($stmt) {
+
+            // Bind parameters and execute the statement
+            $stmt->bind_param("ssssd", $newUsername, $hashedPassword, $newEmail, $newPhone, $userId);
+            $resul = $stmt->execute();
+
+            // Check if the update was successful
+            if ($resul) {
+                $resultMessage = "User details modified successfully.";
+            } else {
+                $resultMessage = "Error modifying user details.";
+            }
+            // Close the statement
+            $stmt->close();
+
+            return $resultMessage;
+        }else{
+
+            die("Error in preparing the statement: " . $this->conn);
+        }
+    }
+
+
+
+    //********************************    Get username     ********************************************
+    // Get username by userID
+
+    /**
+     * @param $userID
+     * @return mixed|void
+     */
+    public function getUsernameByID($userID)
+    {
+        // Prepare the SQL statement
+        $sql = "SELECT username FROM Users WHERE user_id = ?";
 
         // Use prepared statements to prevent SQL injection
         $stmt = $this->conn->prepare($sql);
@@ -376,25 +417,20 @@ class TableCreator
         }
 
         // Bind parameters and execute the statement
-        $stmt->bind_param("sssss", $newUsername, $hashedPassword, $newEmail, $newPhone, $authenticatedUsername);
+        $stmt->bind_param("s", $userID);
         $stmt->execute();
 
-        // Check if the update was successful
-        if (!$stmt->affected_rows > 0) {
-            $resultMessage = "User details modified successfully.";
-        } else {
-            $resultMessage = "Error modifying user details.";
-        }
+        // Bind the result variable
+        $stmt->bind_result($userID);
+
+        // Fetch the result
+        $stmt->fetch();
 
         // Close the statement
         $stmt->close();
 
-        return $resultMessage;
+        return $userID;
     }
-
-
-
-    //********************************    Get username     ********************************************
     // Get user ID by username
     /**
      * @param $username
@@ -417,7 +453,7 @@ class TableCreator
         $stmt->execute();
 
         // Bind the result variable
-        $stmt->bind_result($userId);
+        $stmt->bind_result($username);
 
         // Fetch the result
         $stmt->fetch();
@@ -425,7 +461,7 @@ class TableCreator
         // Close the statement
         $stmt->close();
 
-        return $userId;
+        return $username;
     }
 
 
