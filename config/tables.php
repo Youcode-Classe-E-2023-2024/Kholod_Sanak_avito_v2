@@ -149,10 +149,11 @@ class TableCreator
 
     //******************************   Get regular user     ***********************************************
     // Authenticate a regular user
+
     /**
      * @param $username
      * @param $password
-     * @return bool|void
+     * @return void
      */
     public function authenticateUser($username, $password)
     {
